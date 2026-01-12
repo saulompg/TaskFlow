@@ -1,11 +1,7 @@
 package com.dev.taskflow;
 
-import com.dev.taskflow.Entity.Task;
-import com.dev.taskflow.Repository.TaskRepository;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class TaskFlowApplication {

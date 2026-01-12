@@ -1,6 +1,8 @@
 package com.dev.taskflow.Service;
 
+import com.dev.taskflow.DTOs.TaskCreateDTO;
 import com.dev.taskflow.DTOs.TaskDTO;
+import com.dev.taskflow.Entity.Task;
 import com.dev.taskflow.Repository.TaskRepository;
 import com.dev.taskflow.Service.Interface.ITaskService;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +27,20 @@ public class TaskService implements ITaskService {
                         task.getCreationDate()
                 )
         ).toList();
+    }
+
+    @Override
+    public TaskDTO createTask(TaskCreateDTO taskDTO) {
+        Task newTask = new Task(taskDTO.title(), taskDTO.description());
+
+        Task savedTask = repository.save(newTask);
+
+        return new TaskDTO(
+                savedTask.getId(),
+                savedTask.getTitle(),
+                savedTask.getDescription(),
+                savedTask.isFinished(),
+                savedTask.getCreationDate()
+        );
     }
 }
