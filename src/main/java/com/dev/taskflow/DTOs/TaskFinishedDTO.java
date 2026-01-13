@@ -1,4 +1,8 @@
 package com.dev.taskflow.DTOs;
 
-public record TaskFinishedDTO(boolean finished) {
-}
+import jakarta.validation.constraints.NotNull;
+
+public record TaskFinishedDTO(
+        @NotNull
+        Boolean finished
+) { }
