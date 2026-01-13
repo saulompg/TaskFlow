@@ -3,6 +3,7 @@ package com.dev.taskflow.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +20,9 @@ public class Task {
     @Column(columnDefinition = "TEXT")
     private String description;
     private boolean finished = false;
-    private LocalDateTime creationDate = LocalDateTime.now();
+    @CreationTimestamp // delega ao Hibernate
+    @Column(updatable = false) // Garante que a data de criação nunca mude
+    private LocalDateTime creationDate;
 
     public Task(String title, String description) {
         this.title = title;
