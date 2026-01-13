@@ -9,4 +9,4 @@ public record TaskCreateDTO(
         String title,
         @Size(max = 255, message = "A descrição não pode exceder 255 caracteres")
         String description
-) {}
+) { }
