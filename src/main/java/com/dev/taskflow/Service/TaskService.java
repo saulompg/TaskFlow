@@ -9,11 +9,11 @@ import com.dev.taskflow.Service.Interface.ITaskService;
 import com.dev.taskflow.Specification.TaskSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class TaskService implements ITaskService {
     private final TaskRepository repository;
 
     @Override
-    public List<TaskDTO> getAll(String title, Boolean finished) {
+    public Page<TaskDTO> getAll(String title, Boolean finished, Pageable pageable) {
         Specification<Task> spec = ((root, query, cb) -> cb.conjunction());
 
         if (title != null && !title.isBlank()) {
@@ -34,8 +34,8 @@ public class TaskService implements ITaskService {
             spec = spec.and(TaskSpecification.hasStatus(finished));
         }
 
-        return repository.findAll(spec).stream()
-            .map(this::toDTO).toList();
+        return repository.findAll(spec, pageable)
+            .map(this::toDTO);
     }
 
     @Override

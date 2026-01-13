@@ -10,11 +10,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,12 +33,13 @@ public class TaskController {
     )
     @ApiResponse(responseCode = "200", description = "Lista de Tarefas")
     @GetMapping
-    public ResponseEntity<List<TaskDTO>> getAll(
+    public ResponseEntity<Page<TaskDTO>> getAll(
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) Boolean finished
+            @RequestParam(required = false) Boolean finished,
+            @ParameterObject @PageableDefault(sort = "creationDate", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         // ResponseEntity permite controlar o status code (200 OK)
-        return ResponseEntity.ok().body(taskService.getAll(title, finished));
+        return ResponseEntity.ok().body(taskService.getAll(title, finished, pageable));
     }
 
     @Operation(
@@ -55,7 +59,7 @@ public class TaskController {
 
     @Operation(summary = "Criar Tarefa", description = "Criar uma nova Tarefa")
     @ApiResponses( value = {
-            @ApiResponse(responseCode = "200", description = "Tarefa criada com sucesso"),
+            @ApiResponse(responseCode = "201", description = "Tarefa criada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro de validação")
     })
     @PostMapping
