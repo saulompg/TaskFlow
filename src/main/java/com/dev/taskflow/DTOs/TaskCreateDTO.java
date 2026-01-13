@@ -1,5 +1,6 @@
 package com.dev.taskflow.DTOs;
 
+import com.dev.taskflow.Entity.Task;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -9,4 +10,8 @@ public record TaskCreateDTO(
         String title,
         @Size(max = 255, message = "A descrição não pode exceder 255 caracteres")
         String description
-) { }
+) {
+        public Task toEntity() {
+                return new Task(this.title, this.description);
+        }
+}

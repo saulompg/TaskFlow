@@ -7,7 +7,7 @@ import com.dev.taskflow.DTOs.TaskFinishedDTO;
 import java.util.List;
 
 public interface ITaskService {
-    List<TaskDTO> getAll();
+    List<TaskDTO> getAll(String title, Boolean finished);
     TaskDTO getById(Long id);
     TaskDTO createTask(TaskCreateDTO dto);
     TaskDTO updateTask(Long id, TaskCreateDTO dto);

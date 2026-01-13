@@ -26,13 +26,16 @@ public class TaskController {
 
     @Operation(
             summary = "Buscar Tarefas",
-            description = "Retorna todas as Tarefas disponíveis"
+            description = "Retorna Tarefas com filtros opcionais de titulo e status"
     )
     @ApiResponse(responseCode = "200", description = "Lista de Tarefas")
     @GetMapping
-    public ResponseEntity<List<TaskDTO>> getAll() {
+    public ResponseEntity<List<TaskDTO>> getAll(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Boolean finished
+    ) {
         // ResponseEntity permite controlar o status code (200 OK)
-        return ResponseEntity.ok().body(taskService.getAll());
+        return ResponseEntity.ok().body(taskService.getAll(title, finished));
     }
 
     @Operation(

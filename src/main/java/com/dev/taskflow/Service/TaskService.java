@@ -6,8 +6,10 @@ import com.dev.taskflow.DTOs.TaskFinishedDTO;
 import com.dev.taskflow.Entity.Task;
 import com.dev.taskflow.Repository.TaskRepository;
 import com.dev.taskflow.Service.Interface.ITaskService;
+import com.dev.taskflow.Specification.TaskSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +23,18 @@ public class TaskService implements ITaskService {
     private final TaskRepository repository;
 
     @Override
-    public List<TaskDTO> getAll() {
-        return repository.findAll().stream()
+    public List<TaskDTO> getAll(String title, Boolean finished) {
+        Specification<Task> spec = ((root, query, cb) -> cb.conjunction());
+
+        if (title != null && !title.isBlank()) {
+            spec = spec.and(TaskSpecification.titleContains(title));
+        }
+
+        if (finished != null) {
+            spec = spec.and(TaskSpecification.hasStatus(finished));
+        }
+
+        return repository.findAll(spec).stream()
             .map(this::toDTO).toList();
     }
 
@@ -37,7 +49,7 @@ public class TaskService implements ITaskService {
     @Override
     @Transactional
     public TaskDTO createTask(TaskCreateDTO dto) {
-        Task newTask = new Task(dto.title(), dto.description());
+        Task newTask = dto.toEntity();
 
         Task savedTask = repository.save(newTask);
         return toDTO(savedTask);
