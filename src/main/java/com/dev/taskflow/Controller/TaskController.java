@@ -62,7 +62,7 @@ public class TaskController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<TaskDTO> updateStatus(@PathVariable Long id, @RequestBody @Valid TaskFinishedDTO inputDTO) {
-        TaskDTO updatedTask = taskService.isFinishedTask(id, inputDTO);
+        TaskDTO updatedTask = taskService.updateTaskStatus(id, inputDTO);
         return ResponseEntity.ok().body(updatedTask);
     }
 }

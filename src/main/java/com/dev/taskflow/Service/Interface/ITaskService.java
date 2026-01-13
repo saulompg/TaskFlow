@@ -12,5 +12,5 @@ public interface ITaskService {
     TaskDTO createTask(TaskCreateDTO dto);
     TaskDTO updateTask(Long id, TaskCreateDTO dto);
     void deleteTask(Long id);
-    TaskDTO isFinishedTask(Long id, TaskFinishedDTO dto);
+    TaskDTO updateTaskStatus(Long id, TaskFinishedDTO dto);
 }

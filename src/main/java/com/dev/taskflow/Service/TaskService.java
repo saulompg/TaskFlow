@@ -9,11 +9,13 @@ import com.dev.taskflow.Service.Interface.ITaskService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class TaskService implements ITaskService {
 
     private final TaskRepository repository;
@@ -33,6 +35,7 @@ public class TaskService implements ITaskService {
     }
 
     @Override
+    @Transactional
     public TaskDTO createTask(TaskCreateDTO dto) {
         Task newTask = new Task(dto.title(), dto.description());
 
@@ -41,6 +44,7 @@ public class TaskService implements ITaskService {
     }
 
     @Override
+    @Transactional
     public TaskDTO updateTask(Long id, TaskCreateDTO dto) {
         Task task = repository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada para o ID " + id));
@@ -48,11 +52,11 @@ public class TaskService implements ITaskService {
         task.setTitle(dto.title());
         task.setDescription(dto.description());
 
-        Task savedTask = repository.save(task);
-        return toDTO(savedTask);
+        return toDTO(task);
     }
 
     @Override
+    @Transactional
     public void deleteTask(Long id) {
         Task task = repository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada para o ID " + id));
@@ -60,13 +64,14 @@ public class TaskService implements ITaskService {
     }
 
     @Override
-    public TaskDTO isFinishedTask(Long id, TaskFinishedDTO dto) {
+    @Transactional
+    public TaskDTO updateTaskStatus(Long id, TaskFinishedDTO dto) {
         Task task = repository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada para o ID " + id));
 
         task.setFinished(dto.finished());
-        Task savedtask = repository.save(task);
-        return toDTO(savedtask);
+
+        return toDTO(task);
     }
 
     private TaskDTO toDTO(Task task) {
