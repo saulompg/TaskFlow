@@ -2,7 +2,8 @@ package com.dev.taskflow.Controller;
 
 import com.dev.taskflow.DTOs.TaskCreateDTO;
 import com.dev.taskflow.DTOs.TaskDTO;
-import com.dev.taskflow.DTOs.TaskFinishedDTO;
+import com.dev.taskflow.DTOs.TaskUpdateDTO;
+import com.dev.taskflow.Enums.TaskStatus;
 import com.dev.taskflow.Service.Interface.ITaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,11 +36,11 @@ public class TaskController {
     @GetMapping
     public ResponseEntity<Page<TaskDTO>> getAll(
             @RequestParam(required = false) String title,
-            @RequestParam(required = false) Boolean finished,
+            @RequestParam(required = false) TaskStatus status,
             @ParameterObject @PageableDefault(sort = "creationDate", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         // ResponseEntity permite controlar o status code (200 OK)
-        return ResponseEntity.ok().body(taskService.getAll(title, finished, pageable));
+        return ResponseEntity.ok().body(taskService.getTasks(title, status, pageable));
     }
 
     @Operation(
@@ -85,10 +86,45 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "Tarefa não encontrada (ID inexistente)")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<TaskDTO> update(@PathVariable Long id, @RequestBody @Valid TaskCreateDTO inputDTO) {
+    public ResponseEntity<TaskDTO> update(@PathVariable Long id, @RequestBody @Valid TaskUpdateDTO inputDTO) {
         TaskDTO updatedTask = taskService.updateTask(id, inputDTO);
 
         return ResponseEntity.ok().body(updatedTask);
+    }
+
+    @Operation(summary = "Atualizar Status", description = "Atualizar o Status da Tarefa")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Tarefa atualizada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "404", description = "Tarefa não encontrada (ID inexistente)")
+    })
+    @PatchMapping("/{id}/status/{status}")
+    public ResponseEntity<TaskDTO> updateStatus(@PathVariable Long id, @PathVariable String status) {
+        TaskDTO updatedTask = taskService.updateTaskStatus(id, TaskStatus.fromString(status));
+        return ResponseEntity.ok().body(updatedTask);
+    }
+
+    @Operation(summary = "Atualizar Categoria", description = "Atualizar a Categoria da Tarefa")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Tarefa atualizada com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "404", description = "Recurso não encontrado (ID inexistente)")
+    })
+    @PatchMapping("/{id}/category/{categoryId}")
+    public ResponseEntity<TaskDTO> updateCategory(@PathVariable Long id, @PathVariable Long categoryId) {
+        TaskDTO updatedTask = taskService.updateTaskCategory(id, categoryId);
+        return ResponseEntity.ok().body(updatedTask);
+    }
+
+    @Operation(summary = "Remove Categoria", description = "Remover uma Categoria da Tarefa")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Categoria removida com sucesso"),
+            @ApiResponse(responseCode = "404", description = "Recurso não encontrado (ID inexistente)")
+    })
+    @DeleteMapping("/{id}/category")
+    public ResponseEntity<TaskDTO> removeCategory(@PathVariable Long id) {
+        TaskDTO task = taskService.removeCategory(id);
+        return ResponseEntity.ok().body(task);
     }
 
     @Operation(summary = "Deletar Tarefa", description = "Deletar uma Tarefa do Banco")
@@ -100,17 +136,5 @@ public class TaskController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @Operation(summary = "Atualizar Status", description = "Atualizar o Status da Tarefa")
-    @ApiResponses( value = {
-            @ApiResponse(responseCode = "200", description = "Tarefa atualizada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro de validação"),
-            @ApiResponse(responseCode = "404", description = "Tarefa não encontrada (ID inexistente)")
-    })
-    @PatchMapping("/{id}")
-    public ResponseEntity<TaskDTO> updateStatus(@PathVariable Long id, @RequestBody @Valid TaskFinishedDTO inputDTO) {
-        TaskDTO updatedTask = taskService.updateTaskStatus(id, inputDTO);
-        return ResponseEntity.ok().body(updatedTask);
     }
 }

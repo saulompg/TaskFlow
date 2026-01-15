@@ -10,7 +10,6 @@ public class TaskFlowApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(TaskFlowApplication.class, args);
-
 	}
 
 //	@Bean

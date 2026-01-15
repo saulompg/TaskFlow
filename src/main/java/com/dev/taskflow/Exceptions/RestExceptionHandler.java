@@ -36,4 +36,13 @@ public class RestExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    private ResponseEntity<Map<String, String>> handleIllegalArgumentExceptions(IllegalArgumentException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Parâmetro Inválido");
+        error.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
 }

@@ -2,8 +2,9 @@ package com.dev.taskflow.Service;
 
 import com.dev.taskflow.DTOs.TaskCreateDTO;
 import com.dev.taskflow.DTOs.TaskDTO;
-import com.dev.taskflow.DTOs.TaskFinishedDTO;
+import com.dev.taskflow.DTOs.TaskUpdateDTO;
 import com.dev.taskflow.Entity.Task;
+import com.dev.taskflow.Enums.TaskStatus;
 import com.dev.taskflow.Repository.TaskRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +38,7 @@ class TaskServiceTest {
         Task mockTask = new Task("Teste Unitário", "Descrição do teste" );
         mockTask.setId(validId);
         mockTask.setCreationDate(LocalDateTime.now());
-        mockTask.setFinished(true);
+        mockTask.setStatus(TaskStatus.CONCLUIDO);
 
         // ensina o mock a retornar a tarefa
         when(repository.findById(validId)).thenReturn(Optional.of(mockTask));
@@ -50,7 +51,7 @@ class TaskServiceTest {
         assertThat(result.id()).isEqualTo(validId);
         assertThat(result.title()).isEqualTo("Teste Unitário");
         assertThat(result.description()).isEqualTo("Descrição do teste");
-        assertThat(result.finished()).isTrue();
+        assertThat(result.status()).isEqualTo(TaskStatus.CONCLUIDO);
         // validar interações com o mock
         verify(repository, times(1)).findById(validId);
         verify(repository, never()).save(any());
@@ -76,11 +77,11 @@ class TaskServiceTest {
     @DisplayName("Deve criar uma tarefa com sucesso")
     void shouldReturnTarefaDTO() {
         // ARRANGE
-        TaskCreateDTO inputDTO = new TaskCreateDTO("Teste Unitário", "Descrição do teste");
+        TaskCreateDTO inputDTO = new TaskCreateDTO("Teste Unitário", "Descrição do teste", null);
 
         Long  validId = 1L;
 
-        Task savedEntity = inputDTO.toEntity();
+        Task savedEntity = new Task(inputDTO.title(), inputDTO.description());
         savedEntity.setId(validId);
         savedEntity.setCreationDate(LocalDateTime.now());
 
@@ -120,7 +121,7 @@ class TaskServiceTest {
     @DisplayName("Deve atualizar uma tarefa com sucesso")
     void shouldUpdateTask() {
         // ARRANGE
-        TaskCreateDTO inputDTO = new TaskCreateDTO("Update Teste", "Descrição atualizada");
+        TaskUpdateDTO inputDTO = new TaskUpdateDTO("Update Teste", "Descrição atualizada");
 
         Long validId = 1L;
 
@@ -144,20 +145,18 @@ class TaskServiceTest {
     @Test
     @DisplayName("Deve atualizar o status de uma Tarefa com sucesso")
     void shouldUpdateStatusTask() {
-        TaskFinishedDTO inputDTO = new TaskFinishedDTO(true);
-
         Long validId = 1L;
 
         Task mockTask = new Task("Teste Unitário", "Descrição do teste");
         mockTask.setId(validId);
-        mockTask.setFinished(false);
+        mockTask.setStatus(TaskStatus.PENDENTE);
 
         when(repository.findById(validId)).thenReturn(Optional.of(mockTask));
 
-        TaskDTO updatedTask = taskService.updateTaskStatus(validId, inputDTO);
+        TaskDTO updatedTask = taskService.updateTaskStatus(validId, TaskStatus.EM_ANDAMENTO);
 
         assertThat(updatedTask).isNotNull();
-        assertThat(updatedTask.finished()).isTrue();
+        assertThat(updatedTask.status()).isEqualTo(TaskStatus.EM_ANDAMENTO);
 
         verify(repository, times(1)).findById(validId);
     }

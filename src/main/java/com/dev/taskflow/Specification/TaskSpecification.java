@@ -1,6 +1,7 @@
 package com.dev.taskflow.Specification;
 
 import com.dev.taskflow.Entity.Task;
+import com.dev.taskflow.Enums.TaskStatus;
 import org.springframework.data.jpa.domain.Specification;
 
 public class TaskSpecification {
@@ -13,10 +14,10 @@ public class TaskSpecification {
     }
 
     // Filtro por Status (Exact Match)
-    public static Specification<Task> hasStatus(Boolean finished) {
+    public static Specification<Task> hasStatus(TaskStatus status) {
         return (root, query, criteriaBuilder) -> {
-            if (finished == null) return null;
-            return criteriaBuilder.equal(root.get("finished"), finished);
+            if (status == null) return null;
+            return criteriaBuilder.equal(root.get("status"), status);
         };
     }
 }

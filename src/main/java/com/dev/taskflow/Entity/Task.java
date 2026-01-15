@@ -1,5 +1,6 @@
 package com.dev.taskflow.Entity;
 
+import com.dev.taskflow.Enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,10 +20,17 @@ public class Task {
     private String title;
     @Column(columnDefinition = "TEXT")
     private String description;
-    private boolean finished = false;
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status = TaskStatus.PENDENTE;
     @CreationTimestamp // delega ao Hibernate
     @Column(updatable = false) // Garante que a data de criação nunca mude
     private LocalDateTime creationDate;
+
+    @ManyToOne
+    private User user;
+
+    @ManyToOne
+    private Category category;
 
     public Task(String title, String description) {
         this.title = title;

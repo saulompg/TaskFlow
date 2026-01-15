@@ -2,15 +2,18 @@ package com.dev.taskflow.Service.Interface;
 
 import com.dev.taskflow.DTOs.TaskCreateDTO;
 import com.dev.taskflow.DTOs.TaskDTO;
-import com.dev.taskflow.DTOs.TaskFinishedDTO;
+import com.dev.taskflow.DTOs.TaskUpdateDTO;
+import com.dev.taskflow.Enums.TaskStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ITaskService {
-    Page<TaskDTO> getAll(String title, Boolean finished, Pageable pageable);
+    Page<TaskDTO> getTasks(String title, TaskStatus status, Pageable pageable);
     TaskDTO getById(Long id);
     TaskDTO createTask(TaskCreateDTO dto);
-    TaskDTO updateTask(Long id, TaskCreateDTO dto);
+    TaskDTO updateTask(Long id, TaskUpdateDTO dto);
     void deleteTask(Long id);
-    TaskDTO updateTaskStatus(Long id, TaskFinishedDTO dto);
+    TaskDTO updateTaskStatus(Long id, TaskStatus status);
+    TaskDTO updateTaskCategory(Long id, Long categoryId);
+    TaskDTO removeCategory(Long id);
 }

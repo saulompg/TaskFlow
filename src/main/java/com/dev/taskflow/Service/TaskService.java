@@ -2,8 +2,11 @@ package com.dev.taskflow.Service;
 
 import com.dev.taskflow.DTOs.TaskCreateDTO;
 import com.dev.taskflow.DTOs.TaskDTO;
-import com.dev.taskflow.DTOs.TaskFinishedDTO;
+import com.dev.taskflow.DTOs.TaskUpdateDTO;
+import com.dev.taskflow.Entity.Category;
 import com.dev.taskflow.Entity.Task;
+import com.dev.taskflow.Enums.TaskStatus;
+import com.dev.taskflow.Repository.CategoryRepository;
 import com.dev.taskflow.Repository.TaskRepository;
 import com.dev.taskflow.Service.Interface.ITaskService;
 import com.dev.taskflow.Specification.TaskSpecification;
@@ -20,28 +23,29 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class TaskService implements ITaskService {
 
-    private final TaskRepository repository;
+    private final TaskRepository taskRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
-    public Page<TaskDTO> getAll(String title, Boolean finished, Pageable pageable) {
+    public Page<TaskDTO> getTasks(String title, TaskStatus status, Pageable pageable) {
         Specification<Task> spec = ((root, query, cb) -> cb.conjunction());
 
         if (title != null && !title.isBlank()) {
             spec = spec.and(TaskSpecification.titleContains(title));
         }
 
-        if (finished != null) {
-            spec = spec.and(TaskSpecification.hasStatus(finished));
+        if (status != null) {
+            spec = spec.and(TaskSpecification.hasStatus(status));
         }
 
-        return repository.findAll(spec, pageable)
+        return taskRepository.findAll(spec, pageable)
             .map(this::toDTO);
     }
 
     @Override
     public TaskDTO getById(Long id) {
-        Task task = repository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada para o ID " + id));
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada com id: " + id));
 
         return toDTO(task);
     }
@@ -49,17 +53,24 @@ public class TaskService implements ITaskService {
     @Override
     @Transactional
     public TaskDTO createTask(TaskCreateDTO dto) {
-        Task newTask = dto.toEntity();
+        Task newTask = new Task(dto.title(), dto.description());
 
-        Task savedTask = repository.save(newTask);
+        if (dto.categoryId() != null) {
+            Category category = categoryRepository.findById(dto.categoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada com id: " + dto.categoryId()));
+
+            newTask.setCategory(category);
+        }
+
+        Task savedTask = taskRepository.save(newTask);
         return toDTO(savedTask);
     }
 
     @Override
     @Transactional
-    public TaskDTO updateTask(Long id, TaskCreateDTO dto) {
-        Task task = repository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada para o ID " + id));
+    public TaskDTO updateTask(Long id, TaskUpdateDTO dto) {
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada com id: " + id));
 
         task.setTitle(dto.title());
         task.setDescription(dto.description());
@@ -70,19 +81,42 @@ public class TaskService implements ITaskService {
     @Override
     @Transactional
     public void deleteTask(Long id) {
-        Task task = repository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada para o ID " + id));
-        repository.delete(task);
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada com id: " + id));
+        taskRepository.delete(task);
     }
 
     @Override
     @Transactional
-    public TaskDTO updateTaskStatus(Long id, TaskFinishedDTO dto) {
-        Task task = repository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada para o ID " + id));
+    public TaskDTO updateTaskStatus(Long id, TaskStatus status) {
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada com id: " + id));
 
-        task.setFinished(dto.finished());
+        task.setStatus(status);
 
+        return toDTO(task);
+    }
+
+    @Override
+    @Transactional
+    public TaskDTO updateTaskCategory(Long id, Long categoryId) {
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada com id: " + id));
+
+        Category category = categoryRepository.findById(categoryId)
+            .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada com id: " + categoryId));
+
+        task.setCategory(category);
+        return toDTO(task);
+    }
+
+    @Override
+    @Transactional
+    public TaskDTO removeCategory(Long id) {
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada com id: " + id));
+
+        task.setCategory(null);
         return toDTO(task);
     }
 
@@ -91,8 +125,10 @@ public class TaskService implements ITaskService {
             task.getId(),
             task.getTitle(),
             task.getDescription(),
-            task.isFinished(),
-            task.getCreationDate()
+            task.getStatus(),
+            task.getCreationDate(),
+            task.getCategory() != null ? task.getCategory().getId() : null,
+            task.getCategory() != null ? task.getCategory().getName() : "Sem Categoria"
         );
     }
 }
