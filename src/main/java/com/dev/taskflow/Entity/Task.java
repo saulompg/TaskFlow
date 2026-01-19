@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -30,6 +32,7 @@ public class Task {
     private User user;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Category category;
 
     public Task(String title, String description) {

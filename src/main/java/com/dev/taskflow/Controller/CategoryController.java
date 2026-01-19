@@ -2,6 +2,7 @@ package com.dev.taskflow.Controller;
 
 import com.dev.taskflow.DTOs.CategoryCreateDTO;
 import com.dev.taskflow.DTOs.CategoryDTO;
+import com.dev.taskflow.DTOs.CategoryUpdateDTO;
 import com.dev.taskflow.Service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/category")
+@RequestMapping("/categories")
 @Tag(name = "Categorias", description = "Endpoints para gerenciamento das categorias")
 public class CategoryController {
 
@@ -39,8 +40,7 @@ public class CategoryController {
     )
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Categoria encontrada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Categoria não encontrada (ID inexistente)"),
-            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+            @ApiResponse(responseCode = "404", description = "Categoria não encontrada (ID inexistente)")
     })
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> getById(@PathVariable Long id) {
@@ -60,8 +60,8 @@ public class CategoryController {
     ) {
         CategoryDTO createdCategory =  categoryService.createCategory(inputDTO);
 
-        // Cria a URI: localhost:8080/category/{id}
-        var uri = uriBuilder.path("/category/{id}")
+        // Cria a URI: localhost:8080/categories/{id}
+        var uri = uriBuilder.path("/categories/{id}")
                 .buildAndExpand(createdCategory.id())
                 .toUri();
 
@@ -76,7 +76,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Categoria não encontrada (ID inexistente)")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody @Valid CategoryCreateDTO inputDTO) {
+    public ResponseEntity<CategoryDTO> update(@PathVariable Long id, @RequestBody @Valid CategoryUpdateDTO inputDTO) {
         CategoryDTO updatedTask = categoryService.updateCategory(id, inputDTO);
 
         return ResponseEntity.ok().body(updatedTask);

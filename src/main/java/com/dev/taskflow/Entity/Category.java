@@ -19,14 +19,22 @@ public class Category {
     @Column(length = 100)
     private String color;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    private User owner;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Task> tasks;
 
     public Category(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addTask(Task task) {
+        tasks.add(task);
+    }
+
+    public void removeTask(Task task) {
+        tasks.remove(task);
     }
 }

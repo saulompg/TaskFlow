@@ -1,5 +1,6 @@
 package com.dev.taskflow.Specification;
 
+import com.dev.taskflow.Entity.Category;
 import com.dev.taskflow.Entity.Task;
 import com.dev.taskflow.Enums.TaskStatus;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,6 +19,13 @@ public class TaskSpecification {
         return (root, query, criteriaBuilder) -> {
             if (status == null) return null;
             return criteriaBuilder.equal(root.get("status"), status);
+        };
+    }
+
+    public static Specification<Task> hasCategory(Category category) {
+        return (root, query, criteriaBuilder) -> {
+            if (category == null) return null;
+            return criteriaBuilder.equal(root.get("category"), category);
         };
     }
 }

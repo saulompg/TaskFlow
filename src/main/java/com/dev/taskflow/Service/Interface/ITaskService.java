@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ITaskService {
-    Page<TaskDTO> getTasks(String title, TaskStatus status, Pageable pageable);
+    Page<TaskDTO> getTasks(String title, TaskStatus status, Long categoryId, Pageable pageable);
     TaskDTO getById(Long id);
     TaskDTO createTask(TaskCreateDTO dto);
     TaskDTO updateTask(Long id, TaskUpdateDTO dto);

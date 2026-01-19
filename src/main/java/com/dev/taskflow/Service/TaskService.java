@@ -27,7 +27,7 @@ public class TaskService implements ITaskService {
     private final CategoryRepository categoryRepository;
 
     @Override
-    public Page<TaskDTO> getTasks(String title, TaskStatus status, Pageable pageable) {
+    public Page<TaskDTO> getTasks(String title, TaskStatus status, Long categoryId, Pageable pageable) {
         Specification<Task> spec = ((root, query, cb) -> cb.conjunction());
 
         if (title != null && !title.isBlank()) {
@@ -36,6 +36,12 @@ public class TaskService implements ITaskService {
 
         if (status != null) {
             spec = spec.and(TaskSpecification.hasStatus(status));
+        }
+
+        if (categoryId != null) {
+            Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada com id: " + categoryId));
+            spec = spec.and(TaskSpecification.hasCategory(category));
         }
 
         return taskRepository.findAll(spec, pageable)
@@ -107,6 +113,7 @@ public class TaskService implements ITaskService {
             .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada com id: " + categoryId));
 
         task.setCategory(category);
+        category.addTask(task);
         return toDTO(task);
     }
 
@@ -116,7 +123,10 @@ public class TaskService implements ITaskService {
         Task task = taskRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Tarefa não encontrada com id: " + id));
 
+        Category category = task.getCategory();
         task.setCategory(null);
+        category.removeTask(task);
+
         return toDTO(task);
     }
 

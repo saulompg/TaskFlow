@@ -37,10 +37,11 @@ public class TaskController {
     public ResponseEntity<Page<TaskDTO>> getAll(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) TaskStatus status,
+            @RequestParam(required = false) Long categoryId,
             @ParameterObject @PageableDefault(sort = "creationDate", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         // ResponseEntity permite controlar o status code (200 OK)
-        return ResponseEntity.ok().body(taskService.getTasks(title, status, pageable));
+        return ResponseEntity.ok().body(taskService.getTasks(title, status, categoryId, pageable));
     }
 
     @Operation(
@@ -49,8 +50,7 @@ public class TaskController {
     )
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Tarefa encontrada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Tarefa não encontrada (ID inexistente)"),
-            @ApiResponse(responseCode = "500", description = "Erro interno do servidor")
+            @ApiResponse(responseCode = "404", description = "Tarefa não encontrada (ID inexistente)")
     })
     @GetMapping("/{id}")
     public ResponseEntity<TaskDTO> getById(@PathVariable Long id) {
@@ -99,8 +99,8 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "Tarefa não encontrada (ID inexistente)")
     })
     @PatchMapping("/{id}/status/{status}")
-    public ResponseEntity<TaskDTO> updateStatus(@PathVariable Long id, @PathVariable String status) {
-        TaskDTO updatedTask = taskService.updateTaskStatus(id, TaskStatus.fromString(status));
+    public ResponseEntity<TaskDTO> updateStatus(@PathVariable Long id, @PathVariable TaskStatus status) {
+        TaskDTO updatedTask = taskService.updateTaskStatus(id, status);
         return ResponseEntity.ok().body(updatedTask);
     }
 
