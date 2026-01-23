@@ -6,6 +6,7 @@ import com.dev.taskflow.DTOs.UserRegisterDTO;
 import com.dev.taskflow.DTOs.UserUpdateDTO;
 import com.dev.taskflow.Entity.User;
 import com.dev.taskflow.Enums.UserRole;
+import com.dev.taskflow.Exceptions.UserAlreadyExistsException;
 import com.dev.taskflow.Repository.UserRepository;
 import com.dev.taskflow.Service.Interface.IUserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -47,7 +48,7 @@ public class UserService implements IUserService {
     @Transactional
     public UserDTO createUser(UserCreateDTO dto) {
         if (userRepository.existsByEmail(dto.email())) {
-            throw new RuntimeException("Email já cadastrado");
+            throw new UserAlreadyExistsException("O Email '" + dto.email() + "' já está cadastrado no sistema.");
         }
 
         String encryptedPassword = passwordEncoder.encode(dto.password());
@@ -60,7 +61,7 @@ public class UserService implements IUserService {
     @Transactional
     public UserDTO registerUser(UserRegisterDTO dto) {
         if (userRepository.existsByEmail(dto.email())) {
-            throw new RuntimeException("Email já cadastrado");
+            throw new UserAlreadyExistsException("O Email '" + dto.email() + "' já está cadastrado no sistema.");
         }
 
         String encryptedPassword = passwordEncoder.encode(dto.password());

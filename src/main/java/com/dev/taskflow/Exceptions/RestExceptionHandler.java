@@ -67,4 +67,13 @@ public class RestExceptionHandler {
 
         return ResponseEntity.badRequest().body(error);
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    private ResponseEntity<Map<String, String>> handleUserAlreadyExists(UserAlreadyExistsException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Conflito de Dados");
+        error.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
 }
