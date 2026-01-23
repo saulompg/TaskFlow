@@ -8,6 +8,7 @@ import com.dev.taskflow.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Endpoints para autenticação de usuários")
 public class AuthenticationController {
 
     private final AuthenticationManager authenticationManager;
@@ -47,7 +49,8 @@ public class AuthenticationController {
     @Operation(summary = "Registrar usuário", description = "Registrar novo usuário")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Usuário registrado com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro de validação")
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado")
     })
     @PostMapping("/register")
     public ResponseEntity<UserDTO> register(@RequestBody @Valid UserRegisterDTO dto, UriComponentsBuilder uriBuilder) {
