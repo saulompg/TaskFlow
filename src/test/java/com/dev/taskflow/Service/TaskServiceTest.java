@@ -14,7 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -37,7 +36,6 @@ class TaskServiceTest {
 
         Task mockTask = new Task("Teste Unitário", "Descrição do teste" );
         mockTask.setId(validId);
-        mockTask.setCreationDate(LocalDateTime.now());
         mockTask.setStatus(TaskStatus.CONCLUIDO);
 
         // ensina o mock a retornar a tarefa
@@ -83,7 +81,6 @@ class TaskServiceTest {
 
         Task savedEntity = new Task(inputDTO.title(), inputDTO.description());
         savedEntity.setId(validId);
-        savedEntity.setCreationDate(LocalDateTime.now());
 
         when(repository.save(any(Task.class))).thenReturn(savedEntity);
 

@@ -1,5 +1,7 @@
 package com.dev.taskflow.DTOs;
 
+import com.dev.taskflow.Enums.UserRole;
+
 import java.util.UUID;
 
 public record UserDTO(
@@ -7,6 +9,6 @@ public record UserDTO(
         String email,
         String firstName,
         String lastName,
-        String role
+        UserRole role
 ) {
 }

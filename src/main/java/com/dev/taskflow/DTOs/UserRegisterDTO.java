@@ -1,11 +1,9 @@
 package com.dev.taskflow.DTOs;
 
-import com.dev.taskflow.Enums.UserRole;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record UserCreateDTO(
+public record UserRegisterDTO(
         @NotBlank(message = "O Email é obrigatório")
         String email,
         @NotBlank(message = "A Senha é obrigatória")
@@ -14,8 +12,6 @@ public record UserCreateDTO(
         @NotBlank(message = "O Nome é obrigatório")
         String firstName,
         @NotBlank(message = "O Sobrenome é obrigatório")
-        String lastName,
-        @NotNull(message = "O Papel é obrigatório")
-        UserRole role
+        String lastName
 ) {
 }

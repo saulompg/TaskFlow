@@ -1,13 +1,16 @@
 package com.dev.taskflow.Service;
 
-import com.dev.taskflow.DTOs.UserCreateDTO;
 import com.dev.taskflow.DTOs.UserDTO;
+import com.dev.taskflow.DTOs.UserCreateDTO;
+import com.dev.taskflow.DTOs.UserRegisterDTO;
 import com.dev.taskflow.DTOs.UserUpdateDTO;
 import com.dev.taskflow.Entity.User;
+import com.dev.taskflow.Enums.UserRole;
 import com.dev.taskflow.Repository.UserRepository;
 import com.dev.taskflow.Service.Interface.IUserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,7 @@ import java.util.UUID;
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<UserDTO> getUsers(String email) {
@@ -42,7 +46,25 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public UserDTO createUser(UserCreateDTO dto) {
-        User newUser = new User(dto.email(), dto.password(), dto.firstName(), dto.lastName());
+        if (userRepository.existsByEmail(dto.email())) {
+            throw new RuntimeException("Email já cadastrado");
+        }
+
+        String encryptedPassword = passwordEncoder.encode(dto.password());
+        User newUser = new User(dto.email(), encryptedPassword, dto.firstName(), dto.lastName(), dto.role());
+        newUser = userRepository.save(newUser);
+        return toDTO(newUser);
+    }
+
+    @Override
+    @Transactional
+    public UserDTO registerUser(UserRegisterDTO dto) {
+        if (userRepository.existsByEmail(dto.email())) {
+            throw new RuntimeException("Email já cadastrado");
+        }
+
+        String encryptedPassword = passwordEncoder.encode(dto.password());
+        User newUser = new User(dto.email(), encryptedPassword, dto.firstName(), dto.lastName(), UserRole.USER);
         newUser = userRepository.save(newUser);
         return toDTO(newUser);
     }
@@ -69,9 +91,9 @@ public class UserService implements IUserService {
     private UserDTO toDTO(User user) {
         return new  UserDTO(
                 user.getId(),
+                user.getEmail(),
                 user.getFirstName(),
                 user.getLastName(),
-                user.getEmail(),
                 user.getRole()
         );
     }
