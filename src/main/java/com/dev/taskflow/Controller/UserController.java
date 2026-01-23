@@ -21,20 +21,21 @@ import java.util.UUID;
 @Tag(name = "Usuários", description = "Endpoints para gerenciamento de usuários")
 public class UserController {
 
-    private final UserService userService;
-
     @Operation(
             summary = "Buscar Usuários",
             description = "Retorna todos os Usuários ou filtra por email se o filtro for utilizado"
     )
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Busca realizada com sucesso"),
-            @ApiResponse(responseCode = "404", description = "Email não encontrado (apenas se o filtro for usado)")
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
+            @ApiResponse(responseCode = "404", description = "Email não encontrado (apenas se o filtro for usado)"),
     })
     @GetMapping
     public ResponseEntity<List<UserDTO>> getUsers(@RequestParam(required = false) String email) {
         return ResponseEntity.ok().body(userService.getUsers(email));
     }
+
+    private final UserService userService;
 
     @Operation(
             summary = "Buscar Usuário por ID",
@@ -42,6 +43,7 @@ public class UserController {
     )
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Usuário encontrado com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado (ID inexistente)"),
     })
     @GetMapping("/{id}")
@@ -53,6 +55,7 @@ public class UserController {
     @Operation(summary = "Criar Usuário", description = "Criar um novo Usuário")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "400", description = "Erro de validação")
     })
     @PostMapping
@@ -75,6 +78,7 @@ public class UserController {
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado (ID inexistente)")
     })
     @PutMapping("/{id}")
@@ -86,6 +90,7 @@ public class UserController {
     @Operation(summary = "Deletar Usuário", description = "Deletar um Usuário do Banco")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "204", description = "Usuário deletado com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado (ID inexistente)")
     })
     @DeleteMapping("/{id}")

@@ -28,7 +28,10 @@ public class CategoryController {
             summary = "Buscar Categorias",
             description = "Retorna Categorias com filtro opcional de nome"
     )
-    @ApiResponse(responseCode = "200", description = "Lista de Categorias")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Lista de Categorias"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
+    })
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> getAllCategories(@RequestParam(required = false) String name) {
         return ResponseEntity.ok().body(categoryService.getCategories(name));
@@ -40,6 +43,7 @@ public class CategoryController {
     )
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Categoria encontrada com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Categoria não encontrada (ID inexistente)")
     })
     @GetMapping("/{id}")
@@ -51,7 +55,8 @@ public class CategoryController {
     @Operation(summary = "Criar Categoria", description = "Criar uma nova Categoria")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "201", description = "Categoria criada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro de validação")
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
     })
     @PostMapping
     public ResponseEntity<CategoryDTO> create(
@@ -73,6 +78,7 @@ public class CategoryController {
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Categoria atualizada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Categoria não encontrada (ID inexistente)")
     })
     @PutMapping("/{id}")
@@ -85,6 +91,7 @@ public class CategoryController {
     @Operation(summary = "Deletar Categoria", description = "Deletar uma Categoria do Banco")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "204", description = "Categoria deletada com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Categoria não encontrada (ID inexistente)")
     })
     @DeleteMapping("/{id}")

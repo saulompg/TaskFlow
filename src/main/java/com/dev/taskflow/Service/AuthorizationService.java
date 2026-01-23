@@ -1,6 +1,5 @@
 package com.dev.taskflow.Service;
 
-import com.dev.taskflow.Entity.User;
 import com.dev.taskflow.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
@@ -16,14 +15,9 @@ public class AuthorizationService implements UserDetailsService {
     private final UserRepository userRepository;
 
     @Override
+    @NonNull
     public UserDetails loadUserByUsername(@NonNull String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username)
+        return userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .roles(user.getRole().name())
-                .build();
     }
 }

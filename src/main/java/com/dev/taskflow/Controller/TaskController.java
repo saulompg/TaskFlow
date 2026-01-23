@@ -32,7 +32,10 @@ public class TaskController {
             summary = "Buscar Tarefas",
             description = "Retorna Tarefas com filtros opcionais de titulo e status"
     )
-    @ApiResponse(responseCode = "200", description = "Lista de Tarefas")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "200", description = "Lista de Tarefas"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
+    })
     @GetMapping
     public ResponseEntity<Page<TaskDTO>> getAll(
             @RequestParam(required = false) String title,
@@ -50,6 +53,7 @@ public class TaskController {
     )
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Tarefa encontrada com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Tarefa não encontrada (ID inexistente)")
     })
     @GetMapping("/{id}")
@@ -61,7 +65,8 @@ public class TaskController {
     @Operation(summary = "Criar Tarefa", description = "Criar uma nova Tarefa")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "201", description = "Tarefa criada com sucesso"),
-            @ApiResponse(responseCode = "400", description = "Erro de validação")
+            @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
     })
     @PostMapping
     public ResponseEntity<TaskDTO> create(
@@ -83,6 +88,7 @@ public class TaskController {
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Tarefa atualizada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Tarefa não encontrada (ID inexistente)")
     })
     @PutMapping("/{id}")
@@ -96,6 +102,7 @@ public class TaskController {
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Tarefa atualizada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Tarefa não encontrada (ID inexistente)")
     })
     @PatchMapping("/{id}/status/{status}")
@@ -108,6 +115,7 @@ public class TaskController {
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Tarefa atualizada com sucesso"),
             @ApiResponse(responseCode = "400", description = "Erro de validação"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Recurso não encontrado (ID inexistente)")
     })
     @PatchMapping("/{id}/category/{categoryId}")
@@ -119,6 +127,7 @@ public class TaskController {
     @Operation(summary = "Remove Categoria", description = "Remover uma Categoria da Tarefa")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "200", description = "Categoria removida com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Recurso não encontrado (ID inexistente)")
     })
     @DeleteMapping("/{id}/category")
@@ -130,6 +139,7 @@ public class TaskController {
     @Operation(summary = "Deletar Tarefa", description = "Deletar uma Tarefa do Banco")
     @ApiResponses( value = {
             @ApiResponse(responseCode = "204", description = "Tarefa deletada com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Não autorizado"),
             @ApiResponse(responseCode = "404", description = "Tarefa não encontrada (ID inexistente)")
     })
     @DeleteMapping("/{id}")
