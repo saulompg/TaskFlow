@@ -25,6 +25,7 @@ public class Category {
     private String color;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @Setter
     private User user;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)

@@ -4,6 +4,7 @@ import com.dev.taskflow.DTOs.CategoryCreateDTO;
 import com.dev.taskflow.DTOs.CategoryDTO;
 import com.dev.taskflow.DTOs.CategoryUpdateDTO;
 import com.dev.taskflow.Entity.Category;
+import com.dev.taskflow.Entity.User;
 import com.dev.taskflow.Repository.CategoryRepository;
 import com.dev.taskflow.Repository.TaskRepository;
 import com.dev.taskflow.Service.Interface.ICategoryService;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.dev.taskflow.Util.SecurityUtil.getAuthenticatedUser;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -26,7 +29,9 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public List<CategoryDTO> getCategories(String name) {
-        Specification<Category> spec = ((root, query, cb) -> cb.conjunction());
+        User user = getAuthenticatedUser();
+
+        Specification<Category> spec = CategorySpecification.hasUser(user);
 
         if (name != null && !name.isBlank()) {
             spec = spec.and(CategorySpecification.nameContains(name));
@@ -38,8 +43,14 @@ public class CategoryService implements ICategoryService {
 
     @Override
     public CategoryDTO getCategory(Long id) {
+        User user = getAuthenticatedUser();
+
         Category category = categoryRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada para o id " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
+
+        if (!category.getUser().getId().equals(user.getId())) {
+            throw new EntityNotFoundException("Categoria não encontrada");
+        }
 
         return toDTO(category);
     }
@@ -47,16 +58,26 @@ public class CategoryService implements ICategoryService {
     @Override
     @Transactional
     public CategoryDTO createCategory(CategoryCreateDTO dto) {
+        User user = getAuthenticatedUser();
+
         Category category = dto.toEntity();
+        category.setUser(user);
         category = categoryRepository.save(category);
+
         return toDTO(category);
     }
 
     @Override
     @Transactional
     public CategoryDTO updateCategory(Long id, CategoryUpdateDTO dto) {
+        User user = getAuthenticatedUser();
+
         Category category = categoryRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada para o id " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
+
+        if (!category.getUser().getId().equals(user.getId())) {
+            throw new EntityNotFoundException("Categoria não encontrada");
+        }
 
         category.setName(dto.name());
         category.setColor(dto.color());
@@ -67,8 +88,14 @@ public class CategoryService implements ICategoryService {
     @Override
     @Transactional
     public void deleteCategory(Long id) {
+        User user = getAuthenticatedUser();
+
         Category category = categoryRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada para o id " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
+
+        if (!category.getUser().getId().equals(user.getId())) {
+            throw new EntityNotFoundException("Categoria não encontrada");
+        }
 
         taskRepository.removeCategoryReferences(id);
         categoryRepository.delete(category);

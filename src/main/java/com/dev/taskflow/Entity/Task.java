@@ -37,6 +37,7 @@ public class Task {
     private LocalDateTime creationDate;
 
     @ManyToOne
+    @Setter
     private User user;
 
     @ManyToOne
