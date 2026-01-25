@@ -40,7 +40,7 @@ public class UserService implements IUserService {
     @Override
     public UserDTO getUserById(UUID id) {
         User user  = userRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com id: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         return toDTO(user);
     }
 
@@ -74,7 +74,7 @@ public class UserService implements IUserService {
     @Transactional
     public UserDTO updateUser(UUID id, UserUpdateDTO dto) {
         User user  = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         user.setFirstName(dto.firstName());
         user.setLastName(dto.lastName());
         userRepository.save(user);
@@ -85,7 +85,7 @@ public class UserService implements IUserService {
     @Transactional
     public void deleteUser(UUID id) {
         User user = userRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com id: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado"));
         userRepository.delete(user);
     }
 
